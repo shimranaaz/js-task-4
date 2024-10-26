@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kurale&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Pacifico&display=swap"
+        rel="stylesheet">
+    <title>GitHub User Search</title>
+    <style>
+        body {
+            font-family: "Kurale", serif;
+            letter-spacing: 2px;
+            margin: 0;
+            background-image: url("https://img.freepik.com/free-vector/stream-binary-code-design-vector_53876-161363.jpg?t=st=1729164642~exp=1729168242~hmac=f57b60bd03dfe3bcf052bfbfbb40e3b6da015addbdd3a141e4ae2bc505766a4d&w=740");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+        }
+
+        input {
+            width: 60%;
+            padding: 16px;
+            margin: 20px 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 2px solid green;
+            border-radius: 32px;
+            color: #fff;
+        }
+
+        input::placeholder {
+            color: #fff;
+            font-family: "Kurale", serif;
+            letter-spacing: 1px;
+            font-size: 18px;
+            opacity: 1;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+            color: white;
+        }
+
+        button {
+            padding: 10px 22px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-family: "Kurale", serif;
+            letter-spacing: 1px;
+            background-color: transparent;
+            color: white;
+            border: 2px solid green;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: green;
+        }
+
+        #profile,
+        #repos {
+            margin-top: 20px;
+        }
+
+        .profile-card,
+        .repo-card {
+            background-color: transparent;
+            padding: 20px;
+            border: 2px solid green;
+            margin: 10px 0;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        a {
+            color: #28cb28;
+        }
+
+        .profile-card img {
+            width: 100px;
+            border-radius: 50%;
+        }
+
+        h2 {
+            margin-top: 10px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul li {
+            margin: 5px 0;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 35px;
+            font-family: "Dancing Script", cursive;
+        }
+
+        @media only screen and (max-width:412px) {
+            h1 {
+                font-size: 30px;
+            }
+
+            button {
+                font-size: 16px;
+            }
+
+            input::placeholder {
+                letter-spacing: 1px;
+                font-size: 16px;
+                opacity: 1;
+            }
+        }
+
+        @media only screen and (max-width:375px) {
+            h1 {
+                font-size: 30px;
+            }
+
+            button {
+                font-size: 16px;
+            }
+
+            input::placeholder {
+                letter-spacing: 1px;
+                font-size: 14px;
+                opacity: 1;
+            }
+        }
+
+        @media only screen and (max-width:344px) {
+            h1 {
+                font-size: 30px;
+            }
+
+            input::placeholder {
+                letter-spacing: 1px;
+                font-size: 12px;
+                opacity: 1;
+            }
+
+            button {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>GitHub User Search</h1>
+        <input type="text" id="username" placeholder="Enter GitHub username...">
+        <button id="searchBtn">Search</button>
+
+        <div id="profile"></div>
+        <div id="repos"></div>
+    </div>
+
+    <script>
+        const API_URL = 'https://api.github.com/users/';
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            const username = document.getElementById('username').value;
+            if (username) {
+                fetchUserData(username);
+                fetchUserRepos(username);
+            }
+        });
+
+        function fetchUserData(username) {
+            fetch(API_URL + username)
+                .then(response => response.json())
+                .then(data => displayProfile(data))
+                .catch(error => console.log(error));
+        }
+
+        function fetchUserRepos(username) {
+            fetch(API_URL + username + '/repos')
+                .then(response => response.json())
+                .then(repos => displayRepos(repos))
+                .catch(error => console.log(error));
+        }
+
+        function displayProfile(user) {
+            const profileDiv = document.getElementById('profile');
+            profileDiv.innerHTML = `
+                <div class="profile-card">
+                    <img src="${user.avatar_url}" alt="${user.login}">
+                    <h2>${user.name ? user.name : user.login}</h2>
+                    <p>${user.bio ? user.bio : 'No bio available'}</p>
+                    <ul>
+                        <li><strong>Followers:</strong> ${user.followers}</li>
+                        <li><strong>Following:</strong> ${user.following}</li>
+                        <li><strong>Public Repos:</strong> ${user.public_repos}</li>
+                    </ul>
+                    <a href="${user.html_url}" target="_blank">View Profile on GitHub</a>
+                </div>
+            `;
+        }
+
+        function displayRepos(repos) {
+            const reposDiv = document.getElementById('repos');
+            reposDiv.innerHTML = '<h2>Repositories</h2>';
+            repos.forEach(repo => {
+                const repoCard = document.createElement('div');
+                repoCard.classList.add('repo-card');
+                repoCard.innerHTML = `
+                    <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
+                    <p>${repo.description ? repo.description : 'No description available'}</p>
+                    <ul>
+                        <li><strong>Stars:</strong> ${repo.stargazers_count}</li>
+                        <li><strong>Forks:</strong> ${repo.forks_count}</li>
+                        <li><strong>Language:</strong> ${repo.language ? repo.language : 'N/A'}</li>
+                    </ul>
+                `;
+                reposDiv.appendChild(repoCard);
+            });
+        }
+    </script>
+</body>
+
+</html>
